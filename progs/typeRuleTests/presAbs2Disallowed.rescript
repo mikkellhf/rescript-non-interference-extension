@@ -1,0 +1,10 @@
+-- Should fail, as the field of a record is set to a function closure in a High security context. 
+-- cabal run exes progs/typeRuleTests/presAbs2Disallowed.rescript
+
+let add = (x<L>) => {(x + 1)};
+let h<H> = true;
+if (h) {
+    let r = {l : add}
+} else {
+    let x = 2
+}

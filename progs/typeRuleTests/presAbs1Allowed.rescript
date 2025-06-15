@@ -1,5 +1,5 @@
 -- Should succeed, as it is now allowed to have functions closures in records
--- cabal run exes progs/typeRuleTests/AbstractionDisallowed.rescript
+-- cabal run exes progs/typeRuleTests/presAbs1Allowed.rescript
 
 let add = (x<L>) => {(x + 1)};
 let r = {x1 : add}

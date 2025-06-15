@@ -1,0 +1,14 @@
+-- Should succeed, showcases the use of a function closure from a record.
+-- cabal run exes -- progs/typeRuleTests/presAbs3Return.rescript
+
+let add = (x<L>) => {(x + 1)};
+let r = {x1 : add};
+let y = ((r).x1)(2)
+
+--let h<H>=true;
+--if (h) {
+--  let y = ((r).x1)(2)
+--} else {
+--    let x = 2
+--}
+

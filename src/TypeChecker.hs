@@ -176,7 +176,6 @@ check env pc expr = case expr of
                     _ :-> _ -> do
                         sat (pc `joinLeq` LH Low) "NotSat: pc <= Low"
                         return $ M.insert (Right label_i) t_i gamma
-
                     Environment subEnv ->
                         return $ M.insert (Right label_i) (Environment subEnv) gamma
                     RefLH rt_i -> do

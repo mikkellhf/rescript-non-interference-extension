@@ -1,0 +1,12 @@
+-- Should succeed, showcases the use of a function closure from a record.
+-- cabal run exes -- progs/typeRuleTests/presAbs4Implicit.rescript
+
+let h<H> = true;
+let l = 2;
+let r = {x1 :  (x<H>) => {
+    if (x) {
+        l := 0
+    } else {
+        l := 1
+    }}};
+((r).l)(h)
