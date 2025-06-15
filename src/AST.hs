@@ -151,11 +151,16 @@ recordChecker (LH Low) = LH Low
 recordChecker _        = LH High
 
 instance Lattice LevelT where
-    (Environment env) \/ (LH Low) = recordChecker (Environment env) 
-    (Environment _) \/ (LH High) = LH High
-    (LH Low) \/ (Environment env) = recordChecker (Environment env)
+    (Environment env) \/ (LH Low) = Environment env
+    (Environment env) \/ (LH High) = if recordChecker (Environment env) == LH Low 
+            then error "Cannot join low record with High"
+            else Environment env
+    (LH Low) \/ (Environment env) = Environment env
     
-    (LH High) \/ (Environment _) = LH High
+    (LH High) \/ (Environment env) = 
+        if recordChecker (Environment env) == LH Low 
+            then error "Cannot join low record with High"
+            else Environment env
     (Environment env1) \/ (Environment env2) = 
         recordChecker (Environment env1) \/ recordChecker (Environment env2)
     (LH Low) \/ (LH Low) = LH Low

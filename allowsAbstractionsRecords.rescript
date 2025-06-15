@@ -1,0 +1,10 @@
+-- Allows abstractions, and correct types applications
+-- cabal run exes allowsAbstractionsRecords.rescript
+let r = {l : (x<L>) => {
+    if (x) {
+        x
+    } else {
+        x
+    }}};
+
+let y = ((r).l)(2)

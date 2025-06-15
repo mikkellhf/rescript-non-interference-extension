@@ -152,27 +152,36 @@ check env pc expr = case expr of
         let fieldTypeLoop gamma eff [] = return (Environment gamma, eff)
             fieldTypeLoop gamma eff (Right (label_i, levelt_i, expr_i) : rest) = do
                 sat (levelt_i `elem` [LH Low, LH High]) "NotSat: levelt_i `elem` [LH Low, LH High]"
+
                 t_i :@ eff_i :|> _ <- check env pc expr_i
                 newGamma <- case t_i of
+                    _ :-> _ -> do
+                        error "An abstraction cannot be explicitly typed"
+
                     Environment _ -> do
                         error "A record cannot be explicitly typed"
                     RefLH rt_i -> do
                         sat (rt_i `elem` [Low, High]) "NotSat: l `elem` [Low, High]"
                         sat (pc `joinLeq` (LH rt_i)) "NotSat: pc <= Ref t_i"
-                        return $ M.insert (Right label_i) t_i gamma
+                        return $ M.insert (Right label_i) levelt_i gamma
                     _ -> do
                         sat (pc `joinLeq` t_i) "NotSat pc <= t_i"
-                        return $ M.insert (Right label_i) t_i gamma
+                        sat (t_i `joinLeq` levelt_i)  "NotSat t_i <= levelt_i"
+                        return $ M.insert (Right label_i) levelt_i gamma
                 let newEff = eff_i /\ eff
                 fieldTypeLoop newGamma newEff rest
             fieldTypeLoop gamma eff (Left (label_i, expr_i) : rest) = do
                 t_i :@ eff_i :|> _ <- check env pc expr_i
                 newGamma <- case t_i of
+                    _ :-> _ -> do
+                        sat (pc `joinLeq` LH Low) "NotSat: pc <= Low"
+                        return $ M.insert (Right label_i) t_i gamma
+
                     Environment subEnv ->
                         return $ M.insert (Right label_i) (Environment subEnv) gamma
                     RefLH rt_i -> do
                         sat (rt_i `elem` [Low, High]) "NotSat: l `elem` [Low, High]"
-                        sat (pc `joinLeq` (LH rt_i)) "NotSat: pc <= Ref t_i"
+                        sat (pc `joinLeq` LH rt_i) "NotSat: pc <= Ref t_i"
                         return $ M.insert (Right label_i) t_i gamma
                     _ -> do
                         sat (pc `joinLeq` t_i) "NotSat pc <= t_i"
